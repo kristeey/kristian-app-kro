@@ -1,0 +1,14 @@
+apiVersion: kro.run/v1alpha1
+kind: KristianApp
+metadata:
+  name: my-kro-app
+spec:
+  name: my-kro-app
+  environment: dev
+  team: team-infra
+  product: poc-app
+  image:
+    repo: "gcr.io/google-samples/hello-app"
+    tag: "1.0"
+  ingress:
+    enabled: true
