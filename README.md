@@ -24,7 +24,7 @@
 
 1. **Clone this repository and change to the directory:**
    ```sh
-   git clone <your-repo-url>
+   git clone git@github.com:kristeey/kristian-app-kro.git
    cd kristian-app-kro
    ```
 
