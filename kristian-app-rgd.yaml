@@ -69,9 +69,18 @@ spec:
         apiVersion: apps/v1
         kind: Deployment
         metadata:
-          name: ${schema.spec.name} # Use the name provided by user
+          name: ${schema.spec.name}
+          ownerReferences:
+            - apiVersion: kro.run/v1alpha1
+              kind: ${schema.kind}
+              name: ${schema.metadata.name}
+              uid: ${schema.metadata.uid}
+              blockOwnerDeletion: true
+              controller: false
+          annotations:
+            argocd.argoproj.io/tracking-id: ${schema.metadata.?annotations["argocd.argoproj.io/tracking-id"].orValue("")}
         spec:
-          replicas: ${schema.spec.autoscaling.minReplicas} # Use the minReplicas from autoscaling
+          replicas: ${schema.spec.autoscaling.minReplicas}
           revisionHistoryLimit: 3
           strategy:
             type: RollingUpdate
@@ -93,7 +102,7 @@ spec:
                   type: RuntimeDefault
               containers:
                 - name: ${schema.spec.name}
-                  image: ${schema.spec.image.repo}:${schema.spec.image.tag} # Use the image provided by user
+                  image: ${schema.spec.image.repo}:${schema.spec.image.tag}
                   imagePullPolicy: IfNotPresent
                   lifecycle:
                     # Graceful shutdown: wait 5 seconds before terminating the container
@@ -133,6 +142,15 @@ spec:
         kind: Service
         metadata:
           name: ${schema.spec.name}
+          ownerReferences:
+            - apiVersion: kro.run/v1alpha1
+              kind: ${schema.kind}
+              name: ${schema.metadata.name}
+              uid: ${schema.metadata.uid}
+              blockOwnerDeletion: true
+              controller: false
+          annotations:
+            argocd.argoproj.io/tracking-id: ${schema.metadata.?annotations["argocd.argoproj.io/tracking-id"].orValue("")}
         spec:
           type: ClusterIP
           selector: ${deployment.spec.selector.matchLabels} # Use the deployment selector
@@ -150,6 +168,15 @@ spec:
         kind: Ingress
         metadata:
           name: ${schema.spec.name}
+          ownerReferences:
+            - apiVersion: kro.run/v1alpha1
+              kind: ${schema.kind}
+              name: ${schema.metadata.name}
+              uid: ${schema.metadata.uid}
+              blockOwnerDeletion: true
+              controller: false
+          annotations:
+            argocd.argoproj.io/tracking-id: ${schema.metadata.?annotations["argocd.argoproj.io/tracking-id"].orValue("")}
         spec:
           ingressClassName: '${ schema.spec.ingress.public ? "traefik" : "traefik-internal" }'
           rules:
@@ -171,6 +198,15 @@ spec:
         kind: ServiceAccount
         metadata:
           name: "${ schema.spec.serviceAccount.name != '' ? schema.spec.serviceAccount.name : schema.spec.name + '-sa' }"
+          ownerReferences:
+            - apiVersion: kro.run/v1alpha1
+              kind: ${schema.kind}
+              name: ${schema.metadata.name}
+              uid: ${schema.metadata.uid}
+              blockOwnerDeletion: true
+              controller: false
+          annotations:
+            argocd.argoproj.io/tracking-id: ${schema.metadata.?annotations["argocd.argoproj.io/tracking-id"].orValue("")}
 
     - id: podDisruptionBudget
       includeWhen:
@@ -181,6 +217,15 @@ spec:
         kind: PodDisruptionBudget
         metadata:
           name: ${schema.spec.name}
+          ownerReferences:
+            - apiVersion: kro.run/v1alpha1
+              kind: ${schema.kind}
+              name: ${schema.metadata.name}
+              uid: ${schema.metadata.uid}
+              blockOwnerDeletion: true
+              controller: false
+          annotations:
+            argocd.argoproj.io/tracking-id: ${schema.metadata.?annotations["argocd.argoproj.io/tracking-id"].orValue("")}
         spec:
           minAvailable: ${schema.spec.podDisruptionBudget.minAvailable}
           selector:
